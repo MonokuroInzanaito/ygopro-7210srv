@@ -64,7 +64,8 @@ after_build:
   - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://github.com/MonokuroInzanaito/ygopro-777DIY/archive/master.zip ; exit 0"
   - 7z x ygopro-777DIY-master.zip
   - rm -rf ygopro-777DIY-master/expansions/pics
-  - cp -rf ygopro-777DIY-master/* .
+  - mv -f ygopro-777DIY-master/expansions .
+  - mv -f ygopro-777DIY-master/lflist.conf .
   - rm -rf ygopro-777DIY-master.zip ygopro-777DIY-master
   - cp -rf ../../gframe .
   - cp -rf ../../ocgcore .
