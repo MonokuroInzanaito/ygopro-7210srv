@@ -328,7 +328,9 @@ int32 field::select_chain(uint16 step, uint8 playerid, uint8 spe_count, uint8 fo
 		}
 		return FALSE;
 	} else {
-		if((returns.ivalue[0] < 0 && forced) || returns.ivalue[0] >= (int32)core.select_chains.size()) {
+		if(!forced && returns.ivalue[0] == -1)
+			return TRUE;
+		if(returns.ivalue[0] < 0 || returns.ivalue[0] >= (int32)core.select_chains.size()) {
 			pduel->write_buffer8(MSG_RETRY);
 			return FALSE;
 		}
@@ -440,7 +442,7 @@ int32 field::select_position(uint16 step, uint8 playerid, uint32 code, uint8 pos
 		return FALSE;
 	} else {
 		uint32 pos = returns.ivalue[0];
-		if(pos != 0x1 && pos != 0x2 && pos != 0x4 && pos != 0x8 && !(pos & positions)) {
+		if(pos != 0x1 && pos != 0x2 && pos != 0x4 && pos != 0x8 || !(pos & positions)) {
 			pduel->write_buffer8(MSG_RETRY);
 			return FALSE;
 		}
@@ -684,7 +686,7 @@ int32 field::sort_card(int16 step, uint8 playerid, uint8 is_chain) {
 	if(step == 0) {
 		returns.bvalue[0] = 0;
 		if((playerid == 1) && (core.duel_options & DUEL_SIMPLE_AI)) {
-			returns.ivalue[0] = -1;
+			returns.bvalue[0] = -1;
 			return TRUE;
 		}
 		if(core.select_cards.empty())

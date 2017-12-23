@@ -114,12 +114,14 @@ void SingleDuel::JoinGame(DuelPlayer* dp, void* pdata, bool is_creater) {
 	if(!players[0] || !players[1]) {
 		STOC_HS_PlayerEnter scpe;
 		BufferIO::CopyWStr(dp->name, scpe.name, 20);
-		if(players[0]) {
+		if(!players[0])
+			scpe.pos = 0;
+		else
 			scpe.pos = 1;
+		if(players[0]) {
 			NetServer::SendPacketToPlayer(players[0], STOC_HS_PLAYER_ENTER, scpe);
 		}
 		if(players[1]) {
-			scpe.pos = 0;
 			NetServer::SendPacketToPlayer(players[1], STOC_HS_PLAYER_ENTER, scpe);
 		}
 		for(auto pit = observers.begin(); pit != observers.end(); ++pit)
@@ -361,16 +363,23 @@ void SingleDuel::PlayerReady(DuelPlayer* dp, bool is_ready) {
 	if(ready[dp->type] == is_ready)
 		return;
 	if(is_ready) {
-		bool allow_ocg = host_info.rule == 0 || host_info.rule == 2;
-		bool allow_tcg = host_info.rule == 1 || host_info.rule == 2;
-		int res = host_info.no_check_deck ? false : deckManager.CheckLFList(pdeck[dp->type], host_info.lflist, allow_ocg, allow_tcg);
-		if(res) {
+		unsigned int deckerror = 0;
+		if(!host_info.no_check_deck) {
+			if(deck_error[dp->type]) {
+				deckerror = (DECKERROR_UNKNOWNCARD << 28) + deck_error[dp->type];
+			} else {
+				bool allow_ocg = host_info.rule == 0 || host_info.rule == 2;
+				bool allow_tcg = host_info.rule == 1 || host_info.rule == 2;
+				deckerror = deckManager.CheckDeck(pdeck[dp->type], host_info.lflist, allow_ocg, allow_tcg);
+			}
+		}
+		if(deckerror) {
 			STOC_HS_PlayerChange scpc;
 			scpc.status = (dp->type << 4) | PLAYERCHANGE_NOTREADY;
 			NetServer::SendPacketToPlayer(dp, STOC_HS_PLAYER_CHANGE, scpc);
 			STOC_ErrorMsg scem;
 			scem.msg = ERRMSG_DECKERROR;
-			scem.code = res;
+			scem.code = deckerror;
 			NetServer::SendPacketToPlayer(dp, STOC_ERROR_MSG, scem);
 			return;
 		}
@@ -402,7 +411,7 @@ void SingleDuel::UpdateDeck(DuelPlayer* dp, void* pdata) {
 	int mainc = BufferIO::ReadInt32(deckbuf);
 	int sidec = BufferIO::ReadInt32(deckbuf);
 	if(duel_count == 0) {
-		deckManager.LoadDeck(pdeck[dp->type], (int*)deckbuf, mainc, sidec);
+		deck_error[dp->type] = deckManager.LoadDeck(pdeck[dp->type], (int*)deckbuf, mainc, sidec);
 	} else {
 		if(deckManager.LoadSide(pdeck[dp->type], (int*)deckbuf, mainc, sidec)) {
 			ready[dp->type] = true;
@@ -1713,8 +1722,10 @@ void SingleDuel::RefreshMzone(int player, int flag, int use_cache) {
 #ifdef YGOPRO_SERVER_MODE
 	NetServer::ReSendToPlayer(replay_recorder);
 #endif
-	for (int i = 0; i < 5; ++i) {
+	int qlen = 0;
+	while(qlen < len) {
 		int clen = BufferIO::ReadInt32(qbuf);
+		qlen += clen;
 		if (clen == 4)
 			continue;
 		if (qbuf[11] & POS_FACEDOWN)
@@ -1739,8 +1750,10 @@ void SingleDuel::RefreshSzone(int player, int flag, int use_cache) {
 #ifdef YGOPRO_SERVER_MODE
 	NetServer::ReSendToPlayer(replay_recorder);
 #endif
-	for (int i = 0; i < 8; ++i) {
+	int qlen = 0;
+	while(qlen < len) {
 		int clen = BufferIO::ReadInt32(qbuf);
+		qlen += clen;
 		if (clen == 4)
 			continue;
 		if (qbuf[11] & POS_FACEDOWN)
@@ -1765,9 +1778,9 @@ void SingleDuel::RefreshHand(int player, int flag, int use_cache) {
 #ifdef YGOPRO_SERVER_MODE
 	NetServer::ReSendToPlayer(replay_recorder);
 #endif
-	int qlen = 0, slen;
+	int qlen = 0;
 	while(qlen < len) {
-		slen = BufferIO::ReadInt32(qbuf);
+		int slen = BufferIO::ReadInt32(qbuf);
 		int qflag = *(int*)qbuf;
 		int pos = slen - 8;
 		if(qflag & QUERY_LSCALE)

@@ -12,9 +12,9 @@ install:
   - move libevent-2.0.22-stable event
   - xcopy /E event\WIN32-Code event\include
   
-  - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://www.lua.org/ftp/lua-5.2.4.tar.gz ; exit 0"
-  - tar xf lua-5.2.4.tar.gz
-  - move lua-5.2.4\src lua
+  - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://www.lua.org/ftp/lua-5.3.4.tar.gz ; exit 0"
+  - tar xf lua-5.3.4.tar.gz
+  - move lua-5.3.4\src lua
   
   - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://www.sqlite.org/2016/sqlite-amalgamation-3150200.zip ; exit 0"
   - 7z x sqlite-amalgamation-3150200.zip
@@ -37,7 +37,10 @@ build:
 
 after_build:
   - ps: move bin\release\ygopro.exe .
+<<<<<<< HEAD
   - git clone https://github.com/Smile-DK/ygopro-svrelease
+=======
+>>>>>>> 1b40fdc445ea50a658ae6c9780712a2fe91760bd
   
   - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://github.com/purerosefallen/ygopro-server/archive/master.zip ; exit 0"
   - 7z x ygopro-server-master.zip
@@ -46,7 +49,12 @@ after_build:
   - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://nodejs.org/dist/v9.1.0/node-v9.1.0-win-x64.zip ; exit 0"
   - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://github.com/MicrosoftArchive/redis/releases/download/win-3.2.100/Redis-x64-3.2.100.zip ; exit 0"
 
-  - cd ygopro-server
+  - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://github.com/purerosefallen/windbot/archive/master.zip ; exit 0"
+  - 7z x windbot-master.zip
+  - cd windbot-master
+  - msbuild /property:Configuration=Release /property:OutDir=../ygopro-server/windbot
+
+  - cd ../ygopro-server
   - mkdir ygopro
   - cd ygopro
 
@@ -57,10 +65,11 @@ after_build:
   - rm -rf ygopro-scripts-master.zip
   - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://github.com/Fluorohydride/ygopro-scripts/archive/master.zip ; exit 0"
   - 7z x ygopro-scripts-master.zip
-  - cp -rf ygopro-scripts-master/*.lua script
+  - cp -rf ygopro-scripts-master/* script
   - rm -rf ygopro-scripts-master ygopro-scripts-master.zip
 
   - mkdir replay
+<<<<<<< HEAD
   - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://github.com/MonokuroInzanaito/ygopro-777DIY/archive/master.zip ; exit 0"
   - 7z x ygopro-777DIY-master.zip
   - rm -rf ygopro-777DIY-master/expansions/pics
@@ -75,7 +84,25 @@ after_build:
   - cp -rf ../../*.lua .
   - cp -rf ../../strings.conf .
   - cp -rf ../../system.conf .
+=======
+  - mv -f ../../expansions .
+  - mv -f ../../gframe .
+  - mv -f ../../ocgcore .
+  - mv -f ../../premake .
+  - mv -f ../../event .
+  - mv -f ../../lua .
+  - mv -f ../../sqlite3 .
+  - mv -f ../../cards.cdb .
+  - mv -f ../../textures .
+  - mv -f ../../premake4.lua .
+  - mv -f ../../premake5.lua .
+  - mv -f ../../lflist.conf .  
+  - mv -f ../../strings.conf .
+  - mv -f ../../system.conf .
+>>>>>>> 1b40fdc445ea50a658ae6c9780712a2fe91760bd
   - cp -rf ../../ygopro.exe .
+  - mv -f ../../premake5.exe .
+  - mv -f ../../bats/build.bat .
   - cd ..
   
   - mkdir redis
@@ -84,10 +111,10 @@ after_build:
   - 7z x Redis-x64-3.2.100.zip
   - rm -rf Redis-x64-3.2.100.zip
   - cd ..
-  
-  - cp -rf ../ygopro-svrelease/WindBot .
+
+  - cp -rf ygopro/cards.cdb windbot
   - cp -rf config.json config.user.json  
-  - mv -f ../node-v9.1.0-win-x64.zip .
+  - cp -rf ../node-v9.1.0-win-x64.zip .
   - 7z x node-v9.1.0-win-x64.zip
   - rm -rf node-v9.1.0-win-x64.zip
   - cp -rf node-v9.1.0-win-x64/* .
@@ -97,7 +124,8 @@ after_build:
   - npm install ws
   - npm install redis
   - cd ..
-  - 7z a ygopro-server.7z ygopro-server start.bat -mx=9 -xr!.git*
+  - mv -f bats/start.bat .
+  - 7z a -mx9 -xr!.git* ygopro-server.7z ygopro-server start.bat
 
 test: off
 
@@ -108,12 +136,13 @@ artifacts:
     name: ygopro-server
 
 cache:
-  - premake-5.0.0-alpha10-windows.zip
+  - premake-5.0.0-alpha12-windows.zip
   - libevent-2.0.22-stable.tar.gz
-  - lua-5.2.4.tar.gz
+  - freetype-2.8.tar.bz2
+  - irrlicht-1.8.4.zip
+  - lua-5.3.4.tar.gz
+  - sqlite-amalgamation-3200100.zip
+  - irrKlang-32bit-1.5.0.zip
   - sqlite-amalgamation-3150200.zip
-  - node-v9.1.0-win-x64.zip
+  - premake-5.0.0-alpha10-windows.zip
   - Redis-x64-3.2.100.zip
-branches:
-  only:
-  - master

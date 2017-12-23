@@ -69,12 +69,13 @@ public:
 	int32 is_can_be_forbidden();
 	int32 is_available();
 	int32 check_count_limit(uint8 playerid);
-	int32 is_activateable(uint8 playerid, const tevent& e, int32 neglect_cond = FALSE, int32 neglect_cost = FALSE, int32 neglect_target = FALSE, int32 neglect_loc = FALSE);
+	int32 is_activateable(uint8 playerid, const tevent& e, int32 neglect_cond = FALSE, int32 neglect_cost = FALSE, int32 neglect_target = FALSE, int32 neglect_loc = FALSE, int32 neglect_faceup = FALSE);
 	int32 is_action_check(uint8 playerid);
 	int32 is_activate_ready(uint8 playerid, const tevent& e, int32 neglect_cond = FALSE, int32 neglect_cost = FALSE, int32 neglect_target = FALSE);
 	int32 is_condition_check(uint8 playerid, const tevent& e);
 	int32 is_activate_check(uint8 playerid, const tevent& e, int32 neglect_cond = FALSE, int32 neglect_cost = FALSE, int32 neglect_target = FALSE);
 	int32 is_target(card* pcard);
+	int32 is_fit_target_function(card* pcard);
 	int32 is_target_player(uint8 playerid);
 	int32 is_player_effect_target(card* pcard);
 	int32 is_immuned(card* pcard);
@@ -430,6 +431,10 @@ inline effect_flag operator|(effect_flag flag1, effect_flag flag2)
 #define EFFECT_CHANGE_FUSION_ATTRIBUTE	351
 #define EFFECT_EXTRA_FUSION_MATERIAL	352
 #define EFFECT_TUNER_MATERIAL_LIMIT		353
+#define EFFECT_ADD_LINK_CODE				354
+//#define EFFECT_ADD_LINK_SETCODE			355
+#define EFFECT_ADD_LINK_ATTRIBUTE		356
+#define EFFECT_ADD_LINK_RACE				357
 
 #define EVENT_STARTUP		1000
 #define EVENT_FLIP			1001

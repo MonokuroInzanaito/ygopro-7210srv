@@ -20,11 +20,14 @@ static const struct luaL_Reg cardlib[] = {
 	{ "GetOriginalCode", scriptlib::card_get_origin_code },
 	{ "GetOriginalCodeRule", scriptlib::card_get_origin_code_rule },
 	{ "GetFusionCode", scriptlib::card_get_fusion_code },
+	{ "GetLinkCode", scriptlib::card_get_link_code },
 	{ "IsFusionCode", scriptlib::card_is_fusion_code },
+	{ "IsLinkCode", scriptlib::card_is_link_code },
 	{ "IsSetCard", scriptlib::card_is_set_card },
 	{ "IsOriginalSetCard", scriptlib::card_is_origin_set_card },
 	{ "IsPreviousSetCard", scriptlib::card_is_pre_set_card },
 	{ "IsFusionSetCard", scriptlib::card_is_fusion_set_card },
+	{ "IsLinkSetCard", scriptlib::card_is_link_set_card },
 	{ "GetType", scriptlib::card_get_type },
 	{ "GetOriginalType", scriptlib::card_get_origin_type },
 	{ "GetFusionType", scriptlib::card_get_fusion_type },
@@ -58,8 +61,10 @@ static const struct luaL_Reg cardlib[] = {
 	{ "GetAttribute", scriptlib::card_get_attribute },
 	{ "GetOriginalAttribute", scriptlib::card_get_origin_attribute },
 	{ "GetFusionAttribute", scriptlib::card_get_fusion_attribute },
+	{ "GetLinkAttribute", scriptlib::card_get_link_attribute },
 	{ "GetRace", scriptlib::card_get_race },
 	{ "GetOriginalRace", scriptlib::card_get_origin_race },
+	{ "GetLinkRace", scriptlib::card_get_link_race },
 	{ "GetAttack", scriptlib::card_get_attack },
 	{ "GetBaseAttack", scriptlib::card_get_origin_attack },
 	{ "GetTextAttack", scriptlib::card_get_text_attack },
@@ -106,8 +111,10 @@ static const struct luaL_Reg cardlib[] = {
 	{ "IsRank", scriptlib::card_is_rank },
 	{ "IsLink", scriptlib::card_is_link },
 	{ "IsRace", scriptlib::card_is_race },
+	{ "IsLinkRace", scriptlib::card_is_link_race },
 	{ "IsAttribute", scriptlib::card_is_attribute },
 	{ "IsFusionAttribute", scriptlib::card_is_fusion_attribute },
+	{ "IsLinkAttribute", scriptlib::card_is_link_attribute },
 	{ "IsReason", scriptlib::card_is_reason },
 	{ "IsSummonType", scriptlib::card_is_summon_type },
 	{ "IsStatus", scriptlib::card_is_status },
@@ -1010,7 +1017,7 @@ int32 interpreter::get_operation_value(card* pcard, int32 findex, int32 extraarg
 		}
 		return OPERATION_FAIL;
 	}
-	result = lua_tointeger(current_state, -1);
+	result = lua_tonumberint(current_state, -1);
 	lua_pop(current_state, 1);
 	no_action--;
 	call_depth--;
@@ -1032,7 +1039,7 @@ int32 interpreter::get_function_value(int32 f, uint32 param_count) {
 		if (lua_isboolean(current_state, -1))
 			result = lua_toboolean(current_state, -1);
 		else
-			result = lua_tointeger(current_state, -1);
+			result = lua_tonumberint(current_state, -1);
 		lua_pop(current_state, 1);
 		no_action--;
 		call_depth--;
@@ -1066,7 +1073,7 @@ int32 interpreter::get_function_value(int32 f, uint32 param_count, std::vector<i
 			if (lua_isboolean(current_state, index))
 				return_value = lua_toboolean(current_state, index);
 			else
-				return_value = lua_tointeger(current_state, index);
+				return_value = lua_tonumberint(current_state, index);
 			result->push_back(return_value);
 		}
 		lua_settop(current_state, stack_top);
@@ -1127,7 +1134,7 @@ int32 interpreter::call_coroutine(int32 f, uint32 param_count, uint32 * yield_va
 	if (result == 0) {
 		coroutines.erase(f);
 		if(yield_value)
-			*yield_value = lua_isboolean(rthread, -1) ? lua_toboolean(rthread, -1) : lua_tointeger(rthread, -1);
+			*yield_value = lua_isboolean(rthread, -1) ? lua_toboolean(rthread, -1) : lua_tonumberint(rthread, -1);
 		current_state = lua_state;
 		call_depth--;
 		if(call_depth == 0) {

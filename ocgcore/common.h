@@ -22,7 +22,7 @@ typedef long ptr;
 typedef long long int64;
 typedef int int32;
 typedef short int16;
-typedef char int8;
+typedef signed char int8;
 typedef int BOOL;
 
 #define MATCH_ALL(x,y) (((x)&(y))==(y))
@@ -43,3 +43,7 @@ struct card_sort {
 };
 
 #endif /* COMMON_H_ */
+#ifndef MODDED_TONUMBER
+#define MODDED_TONUMBER
+#define lua_tonumberint(L,i) (lua_Integer)(((lua_tonumberx(L, (i), NULL) > 0) ? 0.5 : -0.5) + lua_tonumberx(L, (i), NULL))
+#endif
