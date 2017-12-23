@@ -37,10 +37,6 @@ build:
 
 after_build:
   - ps: move bin\release\ygopro.exe .
-<<<<<<< HEAD
-  - git clone https://github.com/Smile-DK/ygopro-svrelease
-=======
->>>>>>> 1b40fdc445ea50a658ae6c9780712a2fe91760bd
   
   - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://github.com/purerosefallen/ygopro-server/archive/master.zip ; exit 0"
   - 7z x ygopro-server-master.zip
@@ -69,23 +65,12 @@ after_build:
   - rm -rf ygopro-scripts-master ygopro-scripts-master.zip
 
   - mkdir replay
-<<<<<<< HEAD
   - bash -c "curl --retry 5 --connect-timeout 30 --location --remote-header-name --remote-name https://github.com/MonokuroInzanaito/ygopro-777DIY/archive/master.zip ; exit 0"
   - 7z x ygopro-777DIY-master.zip
   - rm -rf ygopro-777DIY-master/expansions/pics
   - mv -f ygopro-777DIY-master/expansions .
   - mv -f ygopro-777DIY-master/lflist.conf .
   - rm -rf ygopro-777DIY-master.zip ygopro-777DIY-master
-  - cp -rf ../../gframe .
-  - cp -rf ../../ocgcore .
-  - cp -rf ../../premake .
-  - cp -rf ../../cards.cdb .
-  - cp -rf ../../textures .
-  - cp -rf ../../*.lua .
-  - cp -rf ../../strings.conf .
-  - cp -rf ../../system.conf .
-=======
-  - mv -f ../../expansions .
   - mv -f ../../gframe .
   - mv -f ../../ocgcore .
   - mv -f ../../premake .
@@ -95,11 +80,9 @@ after_build:
   - mv -f ../../cards.cdb .
   - mv -f ../../textures .
   - mv -f ../../premake4.lua .
-  - mv -f ../../premake5.lua .
-  - mv -f ../../lflist.conf .  
+  - mv -f ../../premake5.lua . 
   - mv -f ../../strings.conf .
   - mv -f ../../system.conf .
->>>>>>> 1b40fdc445ea50a658ae6c9780712a2fe91760bd
   - cp -rf ../../ygopro.exe .
   - mv -f ../../premake5.exe .
   - mv -f ../../bats/build.bat .
